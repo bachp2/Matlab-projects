@@ -12,31 +12,67 @@ rmass = 15*10^4; %kg
 fmass = 25*10^5; %kg
 burntime = 300; %s
 thrust = 45*10^6; %N
-    [t, X] = ode45(@rate_func,[0 burntime], [0; 0]);
-    %plot(t,X(:,1),'r'); %position wrt t
-    %hold on;
-    %plot(t,X(:,2),'g'); %velocity wrt t
-    %hold off;
-    %grid on;
-    y = X(:,1);
-    m = mass(t);
-    f = force(t,y);
-    %plot(t,m);
-    %hold on;
-    plot(t,f);
-    grid on;
+eradii = 6371*10^3;%m
+
+[t, X] = ode45(@rate_func,[0 burntime], [0; 0]);
+%plot(t,X(:,1),'r'); %position wrt t
+%hold on;
+%plot(t,X(:,2),'g'); %velocity wrt t
+%hold off;
+%grid on;
+y = X(:,1);
+v = X(:,2);
+m = mass(t);
+f = force(t,y);
+
+p4 = subplot(4,1,2);
+plot(t, v);
+title('velocity');
+xlabel('time [s]');
+ylabel('velocity [m/s]');
+
+p3 = subplot(4,1,1);
+plot(t, y);
+title('elevation');
+xlabel('time [s]');
+ylabel('elevation [m]');
+
+p1 = subplot(4,1,4);
+plot(t,m);
+title('mass of rocket');
+xlabel('time [s]');
+ylabel('mass [kg]');
+
+p2 = subplot(4,1,3);
+plot(t,f);
+xlabel('time [s]');
+ylabel('force [N]');
+title('net force acting on rocket');
+
+grid(p1, 'on');
+grid(p2, 'on');
+grid(p1, 'minor');
+grid(p2, 'minor');
+grid(p3, 'on');
+grid(p3, 'minor');
+grid(p4, 'on');
+grid(p4, 'minor');
+
+disp('final altitude in km');
+disp(y(end)/10^3);
+
     function f = force(t, y)
         emass = 5.972*10^24; %kg
         G = 6.674*10^-11; %N*(m/kg)^2
-        eradii = 6371*10^3;
-        f = thrust - G.*(emass.*mass(t))/((y+eradii).^2);
+        f = thrust - G.*(emass.*mass(t))./(y+eradii).^2;
     end
 
     function m = mass(t)
         burningrate = fmass/burntime;
         if t <= 300
             m = rmass + fmass - burningrate*t;
-        else m = rmass;
+        else
+            m = rmass;
         end
     end
     
@@ -52,5 +88,6 @@ thrust = 45*10^6; %N
         % pack rate array
         rate = [ydot; vdot];
     end
+
 end
 
