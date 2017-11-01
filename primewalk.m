@@ -31,7 +31,7 @@ for x = 1:steps
     dir = dir*R;
     p(1) = 1;
     p = p + dir;
-    elseif p(1) > 2024 
+    elseif p(1) > w 
     dir = dir*R;
     p(1) = w;
     p = p + dir;
@@ -41,7 +41,7 @@ for x = 1:steps
     p(2) = 1;
     dir = dir*R;
     p = p + dir;
-    elseif p(2) > 2024
+    elseif p(2) > h
     p(2) = h;
     dir = dir*R;
     p = p + dir;
