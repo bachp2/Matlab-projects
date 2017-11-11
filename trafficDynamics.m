@@ -1,39 +1,48 @@
 function trafficDynamics
-global v0 T s0 a b L delta N;
+global v0 T s0 a b L delta N C;
 v0 = 28; %Desired Speed [m/s]
-T = 18; %Time [s]
-s0 = 7.0; %Minimum gap [m]
+T = 1.8; %Time [s]
+s0 = 2.0; %Minimum gap [m]
 a = 0.3; %Acceleration [m/s^2]
 b = 3; %Deceleration [m/s^2]
 L = 5; %Length of car [m]
 delta = 4; %Acceleration exponent
 endtime = 50*60; %[min] to [s]
 d_Xinit = s0+L; %Length of cars + distance between
-N = 10; %Number of cars
-%C = 1000; %Circumference of circle [m]
-%distrib = C/N; %Even distrubution of cars around circle [m/cars]
+N = 20; %Number of cars
+C = 500; %[m] circumference of the ring
+if C/N <= L
+    error('can not devide cars evenly on the ring with the gap between front bumper and rear bumper more than L')
+end
 
 i = 1:N;
-xinit = (-(i(1:N)-1)*(L + d_Xinit));
-vinit = zeros(N,1);
+%xinit_lin = -(i(1:N)-1)*(L + d_Xinit);
+%vinit_lin = zeros(N,1);
 
-[time, M] = ode45(@idm_linear, [0,endtime], [xinit';vinit]);
+xinit_ring = -(i(1:N) - 1).*(C/N);
+vinit_ring = zeros(N,1);
 
+[time, M] = ode45(@idm_ring, [0, endtime], [xinit_ring';vinit_ring]);
+%[time, M] = ode45(@idm_linear, [0,endtime], [xinit_lin';vinit_lin]);
+pos = M(:,1:N);
+vel = M(:,N+1:2*N);
 figure(1)
-hold on
+hold on;
 
 subplot(2,1,1)
-plot(time,M(:,1:N)./1000)
-title("Linear Driving Model, Position");
+plot(time,pos)
+title("Ring Driving Model, Position");
+%title("Linear Driving Model, Position");
 xlabel("Time [s]");
-ylabel("Position [km]");
+ylabel("Position [m]");
 
 subplot(2,1,2)
-plot(time, M(:,N+1:2*N));
-title("Linear Driving Model, Velocity");
+plot(time, vel);
+title("Ring Driving Model, Velocity");
+%title(Linear Driving Model, Velocity");
 xlabel("Time [s]");
 ylabel("Velocity [m/s]");
-
+hold off;
 end%main
 
 function rate = idm_linear(t, X)
@@ -81,7 +90,7 @@ end%linear
 function rate = idm_ring(t, X)
 % IDM: Intellegent Driver model
 
-global N a v0 L delta T s0 b;
+global N a v0 L delta T s0 b C;
 % unpack your variables array X
 % note that you can either use the length function to find mcars
 % or nest this inside your main function to share that variable between main and sub function.
@@ -100,13 +109,16 @@ deltav(2:N) = -v(2:N) + v(1:N-1);
 dv = zeros(1,N);
 
 for i = 1:N
+
 if i == 1
-    S = ((x(end)-x(i))-L);
+    S = ((x(end)-x(i) + C)-L);
 else
     S = ((x(i-1)-x(i))-L);
+end
 
 s=s_star(v(i),deltav(i));
 dv(i) = a*(1-(v(i)./v0).^delta - (s/S).^2);
+
 end
 
 % Pack the rate array
