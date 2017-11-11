@@ -24,6 +24,7 @@ xinit_ring = -(i(1:N) - 1).*(C/N);
 vinit_ring = zeros(N,1);
 
 [time, M] = ode45(@idm_ring, [0, endtime], [xinit_ring';vinit_ring]);
+
 %[time, M] = ode45(@idm_linear, [0,endtime], [xinit_lin';vinit_lin]);
 pos = M(:,1:N);
 vel = M(:,N+1:2*N);
@@ -32,15 +33,15 @@ hold on;
 
 subplot(2,1,1);
 plot(time,pos);
-%title("Ring Driving Model, Position");
-title("Linear Driving Model, Position");
+title("Ring Driving Model, Position");
+%title("Linear Driving Model, Position");
 xlabel("Time [s]");
 ylabel("Position [m]");
 
 subplot(2,1,2);
 plot(time, vel);
-%title("Ring Driving Model, Velocity");
-title("Linear Driving Model, Velocity");
+title("Ring Driving Model, Velocity");
+%title("Linear Driving Model, Velocity");
 xlabel("Time [s]");
 ylabel("Velocity [m/s]");
 hold off;
@@ -49,6 +50,7 @@ hold off;
 figure(2)
 
 %animation linear driving model
+%can be corced into ring model if we take out the first car
 %relpos = -pos(:, 2:N) + pos(:,1);
 %axis(gca, 'equal');
 %axis([min(relpos(:)) max(relpos(:)) -2 2]);
@@ -64,20 +66,19 @@ figure(2)
 %end
 
 %animation ring driving model
-h = gobjects(N,1);
+%h = gobjects(N,1);
 axis(gca, 'equal');
 axis([-R-4 R+4 -R-4 R+4]);
-for t = 1:length(time)
+
+traj = viscircles([0 0],R,'LineStyle',':', 'LineWidth', 1);
+for t = 1:2:length(time)
     hold on
     theta = pos(t,1:N)./R;
-    traj = viscircles([0 0],R,'LineStyle','--');
-    for k = 1:N
-    h(k) = plot(R*cos(theta), R*sin(theta), 'b.', 'MarkerSize', 10);
-    end
-    pause(0.001);
-    delete(h(:));
-    delete(traj);
+    h = plot(R.*cos(theta(:)), R.*sin(theta(:)), 'b.', 'MarkerSize', 15);
+    pause(0.01);
+    delete(h);
 end
+delete(traj);
 
 end%main
 
@@ -135,26 +136,22 @@ v = X(N+1:2*N); % velocities
 
 dx(1:N)=v(1:N);
 % loop over cars
-deltav(1) = -v(1) + v(N);
-deltav(2:N) = -v(2:N) + v(1:N-1);
+% I dont know why this works!
+deltav(1) = abs(-v(1) + v(N));
+deltav(2:N) = abs(-v(2:N) + v(1:N-1));
 
 % here you enter your Matlab code to apply the rate formulas for the IDM model
 % This will be a little different for line of cars vs ring road and will need special
 % consideration for the first car.
 
 dv = zeros(1,N);
+S(1) = abs(((x(end)-x(1) + C) - L));
+S(2:N) = abs(x(1:N-1)-x(2:N)) - L;
 
 for i = 1:N
-
-if i == 1
-    S = ((x(end)-x(i) + C)-L);
-else
-    S = ((x(i-1)-x(i))-L);
-end
-
 s=s_star(v(i),deltav(i));
 
-dv(i) = a*(1-(v(i)./v0).^delta - (s/S).^2);
+dv(i) = a*(1-(v(i)./v0).^delta - (s/S(i)).^2);
 
 end
 
