@@ -69,12 +69,12 @@ figure(2)
 %h = gobjects(N,1);
 axis(gca, 'equal');
 axis([-R-4 R+4 -R-4 R+4]);
-traj = viscircles([0 0],R,'LineStyle',':');
-for t = 1:length(time)
+traj = viscircles([0 0],R,'LineStyle',':', 'LineWidth', 1);
+for t = 1:2:length(time)
     hold on
     theta = pos(t,1:N)./R;
-    h = plot(R.*cos(theta(:)), R.*sin(theta(:)), 'b.', 'MarkerSize', 20);
-    pause(0.0001);
+    h = plot(R.*cos(theta(:)), R.*sin(theta(:)), 'b.', 'MarkerSize', 15);
+    pause(0.001);
     delete(h);
 end
 delete(traj);

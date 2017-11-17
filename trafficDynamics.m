@@ -3,8 +3,8 @@ global v0 T s0 a b L delta N C;
 v0 = 28; %Desired Speed [m/s]
 T = 1.8; %Time [s]
 s0 = 2.0; %Minimum gap [m]
-a = 0.3; %Acceleration [m/s^2]
-b = 3; %Deceleration [m/s^2]
+a = 0.3*rand(N,1) + 0.2; %Acceleration [m/s^2]
+b = 3*rand(N,1) + 1; %Deceleration [m/s^2]
 L = 5; %Length of car [m]
 delta = 4; %Acceleration exponent
 endtime = 15*60; %[min] to [s]
@@ -18,10 +18,10 @@ end
 
 i = 1:N;
 %xinit_lin = -(i(1:N)-1)*(L + d_Xinit);
-%vinit_lin = zeros(N,1);
+%vinit_lin = zeﬂros(N,1);
 
 xinit_ring = -(i(1:N) - 1).*(C/N);
-vinit_ring = zeros(N,1);
+vinit_ring = randi(20,N,1);
 
 [time, M] = ode45(@idm_ring, [0, endtime], [xinit_ring';vinit_ring]);
 
@@ -75,7 +75,7 @@ for t = 1:2:length(time)
     hold on
     theta = pos(t,1:N)./R;
     h = plot(R.*cos(theta(:)), R.*sin(theta(:)), 'b.', 'MarkerSize', 15);
-    pause(0.01);
+    pause(0.001);
     delete(h);
 end
 delete(traj);
@@ -148,11 +148,9 @@ dv = zeros(1,N);
 S(1) = (x(N)-x(1) + C) - L;
 S(2:N) = x(1:N-1)-x(2:N) - L;
 
+s = s_star(v, deltav);
 for i = 1:N
-s=s_star(v(i),deltav(i));
-
-dv(i) = a*(1-(v(i)./v0).^delta - (s/S(i)).^2);
-
+dv(i) = a(i)*(1-(v(i)./v0).^delta - (s(i)./S(i)).^2);
 end
 
 % Pack the rate array
@@ -161,7 +159,7 @@ rate(N+1:2*N) = dv;
 rate = rate'; % convert from row to column
 
 function s_asterix = s_star(vel, delv)
-s_asterix = s0 + vel*T + ((vel*delv)./(2*sqrt(a*b)));
+s_asterix = s0 + vel.*T + ((vel.*delv)./(2.*sqrt(a.*b)));
 end
 
 end%ring
