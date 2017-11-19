@@ -3,7 +3,7 @@ global v0 T s0 a b L delta N C;
 v0 = 28; %Desired Speed [m/s]
 T = 1.8; %Time [s]
 s0 = 2.0; %Minimum gap [m]
-a = 0.3; %Acceleration [m/s^2]
+a = 0.1; %Acceleration [m/s^2]
 b = 3; %Deceleration [m/s^2]
 L = 5; %Length of car [m]
 delta = 4; %Acceleration exponent
@@ -70,7 +70,7 @@ figure(2)
 axis(gca, 'equal');
 axis([-R-4 R+4 -R-4 R+4]);
 traj = viscircles([0 0],R,'LineStyle',':', 'LineWidth', 1);
-for t = 1:2:length(time)
+for t = 1:length(time)
     hold on
     theta = pos(t,1:N)./R;
     h = plot(R.*cos(theta(:)), R.*sin(theta(:)), 'b.', 'MarkerSize', 15);

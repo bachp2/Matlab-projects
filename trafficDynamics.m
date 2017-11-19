@@ -3,10 +3,12 @@ global v0 T s0 a b L delta N C;
 v0 = 28; %Desired Speed [m/s]
 T = 1.8; %Time [s]
 s0 = 2.0; %Minimum gap [m]
-a = 0.3*rand(N,1) + 0.2; %Acceleration [m/s^2]
-b = 3*rand(N,1) + 1; %Deceleration [m/s^2]
+%a = 0.3*rand(N,1) + 0.2; %Acceleration [m/s^2]
+a = 0.15;
+%b = 3*rand(N,1) + 1; %Deceleration [m/s^2]
+b = 3;
 L = 5; %Length of car [m]
-delta = 4; %Acceleration exponent
+delta = 2; %Acceleration exponent
 endtime = 15*60; %[min] to [s]
 d_Xinit = s0+L; %Length of cars + distance between
 N = 50; %Number of cars
@@ -21,7 +23,8 @@ i = 1:N;
 %vinit_lin = zeﬂros(N,1);
 
 xinit_ring = -(i(1:N) - 1).*(C/N);
-vinit_ring = randi(20,N,1);
+%vinit_ring = randi(20,N,1);
+vinit_ring = zeros(N,1);
 
 [time, M] = ode45(@idm_ring, [0, endtime], [xinit_ring';vinit_ring]);
 
@@ -150,7 +153,8 @@ S(2:N) = x(1:N-1)-x(2:N) - L;
 
 s = s_star(v, deltav);
 for i = 1:N
-dv(i) = a(i)*(1-(v(i)./v0).^delta - (s(i)./S(i)).^2);
+%dv(i) = a(i)*(1-(v(i)./v0).^delta - (s(i)./S(i)).^2);
+dv(i) = a.*(1-(v(i)./v0).^delta - (s(i)./S(i)).^2);
 end
 
 % Pack the rate array
