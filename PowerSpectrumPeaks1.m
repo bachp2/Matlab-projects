@@ -1,20 +1,24 @@
-function fourier_cosine
+function PowerSpectrumPeaks1
 
 % Take FFT of a cosine wave with frequency omega and amplitude amp
 
-omega1 = 1;
-omega2 = sqrt(3);
-amp = 10;
+nterms = 4;
+omega = rand(1,nterms)*10;
+amp = 5+rand(1,nterms);
 
 % set the time array
-T = 100000;
-nt = 2^20;
+T = 1000;
+nt = 2^11;
 dt = T/nt;
 
 t=((1:nt)-1)*dt;
 
-% Create f as sum of two cosines over the time domain
-f = amp*cos(omega1*t) + amp*cos(omega2*t);
+% Create f as sum of cosines over the time domain
+f=zeros(1,nt);
+for i = 1:nterms
+% ****** complete this to add up the nterms cosine functions with omega and amp above
+ f = f + amp(i)*cos(omega(1)*t);
+end
 
 % Take FFT
 F = fft(f);
@@ -23,6 +27,7 @@ F = fft(f);
 a = 2*real(F(1:nt/2))/nt; % form the coefficients
 a(1) = a(1)/2;
 b = -2*imag(F(1:nt/2))/nt; % form the coefficients
+
 % get power spectrum
 power=sqrt(a.^2 + b.^2);
 
@@ -31,9 +36,11 @@ w = ((1:nt/2)-1)/T * 2*pi;
 
 % plot
 plot(w, power);
-xlim([0 3]);
+xlim([0 11]);
 xlabel('Frequency')
 ylabel('Power')
 
-end
+% Find Peaks 
+% ******** Add Code Here *******
 
+end
