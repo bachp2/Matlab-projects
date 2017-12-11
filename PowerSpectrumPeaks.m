@@ -24,7 +24,8 @@ function PowerSpectrumPeaks
 load Case3.mat y t;
 x1 = y(1,:);
 x2 = y(2,:);
-% = y(3,:);
+%x3 = y(3,:);
+%f = x1+x2+x3;
 f = x1+x2;
 % Take FFT
 F = fft(f);
@@ -52,10 +53,10 @@ b_X2 = -2*imag(X2(1:nt/2))/nt; % form the coefficients
 % b_X3 = -2*imag(X3(1:nt/2))/nt; % form the coefficients
 
 % get power spectrum
-power_f=sqrt(a.^2 + b.^2);
+power_f  = sqrt(a.^2 + b.^2);
 power_x1 = sqrt(a_X1.^2 + b_X1.^2);
 power_x2 = sqrt(a_X2.^2 + b_X2.^2);
-%power_x3 = sqrt(a_X3.^2 + b_X3.^2);
+% power_x3 = sqrt(a_X3.^2 + b_X3.^2);
 % get the corresponding frequencies: note the 2*pi
 w = ((1:nt/2)-1)/T * 2*pi; 
 
@@ -76,15 +77,23 @@ xlim([0 3]);
 xlabel('Frequency');
 ylabel('Power');
 title('x2');
-subplot(4,1,4); plot(w, power_x3)
-xlim([0 3]);
-xlabel('Frequency');
-ylabel('Power');
-title('x3');
+% subplot(4,1,4); plot(w, power_x3)
+% xlim([0 3]);
+% xlabel('Frequency');
+% ylabel('Power');
+% title('x3');
 
 % Find Peaks 
 % ******** Add Code Here *******
-[pks, locs] = findpeaks(power_f);
+[pks, locs] = findpeaks(power_x1);
 disp(pks)
 disp(locs)
+disp(w(locs(1)));
+disp(w(locs(2)));
+% disp(w(locs(3)));
+% disp(w(locs(4)));
+% disp(w(locs(5)));
+% disp(w(locs(6)));
+% disp(w(locs(7)));
+
 end
