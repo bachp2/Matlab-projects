@@ -1,9 +1,11 @@
 clear all
 
 % Fill in these two matices and the rest is automatic
-
-A=[];     % Stiffness matrix nxn for n masses
-x0=[]';   % Initial condition
+% Stiffness matrix nxn for n masses
+A = diag(-2*ones(4,1),0) + diag(ones(4 -1,1),1) + diag(ones(4 -1,1),-1);
+A(1,1) = -1;
+%A = [-5 1.99; 1.99 -5];
+x0=[1 1 1 1]';   % Initial condition
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
